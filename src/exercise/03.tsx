@@ -4,10 +4,11 @@
 import * as React from 'react'
 import {Switch} from '../switch'
 
-type ToggleContextType = {on: boolean; toggle: () => void} | undefined
+type ToggleContextType = {on: boolean; toggle: () => void}
 const ToggleContext = React.createContext<ToggleContextType | undefined>(
   undefined,
 )
+ToggleContext.displayName = 'ToggleContext'
 
 function Toggle({children}: {children: React.ReactNode}) {
   const [on, setOn] = React.useState(false)
