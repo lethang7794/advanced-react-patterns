@@ -10,6 +10,14 @@ const ToggleContext = React.createContext<ToggleContextType | undefined>(
 )
 ToggleContext.displayName = 'ToggleContext'
 
+const useToggle = () => {
+  const context = React.useContext(ToggleContext)
+  if (!context) {
+    throw new Error('useToggle must be called within <Toggle />')
+  }
+  return context
+}
+
 function Toggle({children}: {children: React.ReactNode}) {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
@@ -22,19 +30,19 @@ function Toggle({children}: {children: React.ReactNode}) {
 }
 
 function ToggleOn({children}: {children: React.ReactNode}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggle()
   return <>{on ? children : null}</>
 }
 
 function ToggleOff({children}: {children: React.ReactNode}) {
-  const {on} = React.useContext(ToggleContext)
+  const {on} = useToggle()
   return <>{on ? null : children}</>
 }
 
 function ToggleButton(
   props: Omit<React.ComponentProps<typeof Switch>, 'on' | 'onClick'>,
 ) {
-  const {on, toggle} = React.useContext(ToggleContext)
+  const {on, toggle} = useToggle()
   return <Switch on={on} onClick={toggle} {...props} />
 }
 
