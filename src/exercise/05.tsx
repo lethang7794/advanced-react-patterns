@@ -11,10 +11,11 @@ function callAll<Args extends Array<unknown>>(
 }
 
 type ToggleState = {on: boolean}
-type ToggleAction = {type: 'toggle'}
+type ToggleAction =
+  | {type: 'toggle'}
+  | {type: 'reset'; initialState: ToggleState}
 // 🦺 add support for the new action type:
 // 💰 Again, this isn't a TypeScript workshop, so I'll just give this to you:
-// | {type: 'reset'; initialState: ToggleState}
 
 function toggleReducer(state: ToggleState, action: ToggleAction) {
   switch (action.type) {
@@ -22,24 +23,30 @@ function toggleReducer(state: ToggleState, action: ToggleAction) {
       return {on: !state.on}
     }
     // 🐨 add a "reset" case here that simply returns the action.initialState
+    case 'reset': {
+      return action.initialState
+    }
   }
 }
 
 // 🐨 accept an object as the first argument here. The object should:
 // - default to an empty object
 // - have a property called "initialOn" that defaults to "false"
-function useToggle() {
+function useToggle({initialOn = false}: {initialOn?: boolean}) {
   // 🐨 store the initialState in a variable here
   // (it should be an object in an "on" property)
+  const initialState = {
+    on: initialOn,
+  }
 
   // 🐨 Instead of the inline object, pass the initialState as the second
   // argument to useReducer here:
-  const [state, dispatch] = React.useReducer(toggleReducer, {on: false})
+  const [state, dispatch] = React.useReducer(toggleReducer, initialState)
   const {on} = state
 
   const toggle = () => dispatch({type: 'toggle'})
   // 🐨 call dispatch with the reset ToggleAction
-  const reset = () => {}
+  const reset = () => dispatch({type: 'reset', initialState})
 
   function getTogglerProps<Props>({
     onClick,
@@ -76,7 +83,7 @@ function useToggle() {
 function App() {
   // 🐨 pass an object with the initialOn property set to true
   // 💰 {initialOn: true}
-  const {on, getTogglerProps, getResetterProps} = useToggle()
+  const {on, getTogglerProps, getResetterProps} = useToggle({initialOn: true})
 
   return (
     <div>
