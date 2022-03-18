@@ -4,29 +4,52 @@
 import * as React from 'react'
 import {Switch} from '../switch'
 
+type TogglerProps = {on: boolean} & Omit<JSX.IntrinsicElements['button'], 'ref'>
+
+function callAll<Args extends Array<unknown>>(
+  ...fns: Array<((...args: Args) => unknown) | undefined>
+) {
+  return (...args: Args) => fns.forEach(fn => fn?.(...args))
+}
+
 function useToggle() {
   const [on, setOn] = React.useState(false)
   const toggle = () => setOn(!on)
 
-  // 🐨 Add a property called `togglerProps`. It should be an object that has
-  // `aria-pressed` and `onClick` properties.
+  function getTogglerProps<Props>(
+    props?: {
+      onClick?: React.DOMAttributes<HTMLButtonElement>['onClick']
+    } & Props,
+  ): TogglerProps {
+    const {onClick, ...rest} = props ?? {}
+    return {
+      'aria-pressed': on,
+      onClick: callAll(onClick, toggle),
+      on,
+      ...rest,
+    }
+  }
+
   return {
     on,
     toggle,
-    togglerProps: {
-      'aria-pressed': on,
-      onClick: toggle,
-    },
+    getTogglerProps,
   }
 }
 
 function App() {
-  const {on, togglerProps} = useToggle()
+  const {on, getTogglerProps} = useToggle()
   return (
     <div>
-      <Switch on={on} {...togglerProps} />
+      <Switch {...getTogglerProps()} />
       <hr />
-      <button aria-label="custom-button" {...togglerProps}>
+      <button
+        {...getTogglerProps({
+          'aria-label': 'custom-button',
+          onClick: () => console.info('onButtonClick'),
+          id: 'custom-button-id',
+        })}
+      >
         {on ? 'on' : 'off'}
       </button>
     </div>
