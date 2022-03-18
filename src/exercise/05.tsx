@@ -33,11 +33,7 @@ function toggleReducer(state: ToggleState, action: ToggleAction) {
 // - default to an empty object
 // - have a property called "initialOn" that defaults to "false"
 function useToggle({initialOn = false}: {initialOn?: boolean}) {
-  // 🐨 store the initialState in a variable here
-  // (it should be an object in an "on" property)
-  const initialState = {
-    on: initialOn,
-  }
+  const [initialState] = React.useState({on: initialOn})
 
   // 🐨 Instead of the inline object, pass the initialState as the second
   // argument to useReducer here:
