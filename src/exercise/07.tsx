@@ -3,6 +3,7 @@
 
 import * as React from 'react'
 import {Switch} from '../switch'
+import {useControlPropWarnings} from '../utils'
 
 function callAll<Args extends Array<unknown>>(
   ...fns: Array<((...args: Args) => unknown) | undefined>
@@ -121,15 +122,29 @@ function Toggle({
   // we get out of useToggle.
   on: controlledOn,
   onChange,
+  readOnly,
 }: {
   on?: boolean
   onChange?: (state: ToggleState, action: ToggleAction) => void
+  readOnly?: boolean
 }) {
+  useControlPropWarnings({
+    readOnly,
+    controlPropValue: controlledOn,
+    hasOnChange: Boolean(onChange),
+    controlPropName: 'on',
+    componentName: 'Toggle',
+    readOnlyProp: 'readOnly',
+    initialValueProp: 'initialOn',
+    onChangeProp: 'onChange',
+  })
+
   const {on, getTogglerProps} = useToggle({
     // 🐨 forward on and onChange
     on: controlledOn,
     onChange,
   })
+
   const props = getTogglerProps({on})
   return <Switch {...props} />
 }
